@@ -1,7 +1,8 @@
 // Package slink provides a go wrapper for the libslink C library.
 package slink
 
-//#cgo LDFLAGS: -lslink
+//#cgo CFLAGS: -I/usr/local/include
+//#cgo LDFLAGS: /usr/local/lib/libslink.a
 //#include <libslink.h>
 import "C"
 
