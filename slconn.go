@@ -70,11 +70,10 @@ func (s *SLCD) SetUniParams(selectors string, seqnum int, timestamp string) int 
 	defer C.free(unsafe.Pointer(ctimestamp))
 	return (int)(C.sl_setuniparams((*C.struct_slcd_s)(s), cselectors, (C.int)(seqnum), ctimestamp))
 }
-func (s *SLCD) RequestInfo() (string, int) {
-	cs := C.CString("")
+func (s *SLCD) RequestInfo(infostr string) int {
+	cs := C.CString(infostr)
 	defer C.free(unsafe.Pointer(cs))
-	err := (int)(C.sl_request_info((*C.struct_slcd_s)(s), cs))
-	return C.GoString(cs), err
+	return (int)(C.sl_request_info((*C.struct_slcd_s)(s), cs))
 }
 
 func (s *SLCD) Terminate() {
@@ -152,12 +151,13 @@ func (s *SLCD) Disconnect() int {
 	return 0
 }
 
-func (s *SLCD) Ping(serverid, site string) int {
-	cserverid := C.CString(serverid)
+func (s *SLCD) Ping() (int, string, string) {
+	cserverid := C.CString((string)(make([]byte, 100)))
 	defer C.free(unsafe.Pointer(cserverid))
-	csite := C.CString(site)
+	csite := C.CString((string)(make([]byte, 100)))
 	defer C.free(unsafe.Pointer(csite))
-	return (int)(C.sl_ping((*C.struct_slcd_s)(s), cserverid, csite))
+	ping := (int)(C.sl_ping((*C.struct_slcd_s)(s), cserverid, csite))
+	return ping, C.GoString(cserverid), C.GoString(csite)
 }
 
 func (s *SLCD) CheckSock(sock, tosec, tousec int) int {
